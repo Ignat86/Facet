@@ -19,8 +19,7 @@ export default class Product extends PureComponent {
             <h4 className="modal-h4"><b>Цена: </b>{price} USD</h4>
             <h4 className="modal-h4"><b>Размеры: </b>{dimensions} см</h4>
             <div className="btn-group" role="group" aria-label="...">
-              <button className="btn-success" role="button" onClick={() => toggleModal(i)}>Посмотреть</button>
-              <button className="btn-danger" role="button" onClick={() => deleteProduct(_id)}>Удалить</button>
+              <button className="btn-success" role="button" onClick={() => toggleModal(i)}>Посмотреть</button>              
             </div>
           </div>
         </div>

@@ -5,15 +5,12 @@ import Immutable from 'immutable';
 import { Modal, ProductsListManager } from '../components';
 import * as productsActionCreators from '../actions/products';
 
-export default class ProductsContainer extends Component {
+class ProductsContainer extends Component {
   constructor (props) {
     super(props);
-    // The initial state
-    this.state = { selectedProduct: {}, searchBar: '' };
-    // Bind the functions to this (context) 
+    // Bind the functions to this (context)
     this.toggleModal = this.toggleModal.bind(this);
-    this.deleteProduct = this.deleteProduct.bind(this);
-    this.setSearchBar = this.setSearchBar.bind(this);    
+    this.setSearchBar = this.setSearchBar.bind(this);
   }
 
   // Once the component mounted it fetches the data from the server
@@ -22,7 +19,7 @@ export default class ProductsContainer extends Component {
   }
 
   toggleModal (index) {
-    this.setState({ selectedProduct: this.state.products[index] });
+    this.props.productsActions.showSelectedProduct(this.props.products[index]);
     // Since we included bootstrap we can show our modal through its syntax
     $('#product-modal').modal();
   }
@@ -31,29 +28,13 @@ export default class ProductsContainer extends Component {
     this.props.productsActions.getProducts();
   }
 
- deleteProduct (id) {
-    fetch(`http://tranquil-wildwood-73157.herokuapp.com/products/${id}`, {      
-      headers: new Headers({
-        'Content-Type': 'application/json',
-      }),
-      method: 'DELETE',
-    })
-    .then(response => response.json())
-    .then(response => {
-      // The product is also removed from the state thanks to the filter function
-      this.setState({ products: this.state.products.filter(product => product._id !== id) }); 
-      console.log(response.message);
-    });
-  }
-
-  setSearchBar (event) { 
-    // Super still filters super mario thanks to 
-    this.setState({ searchBar: event.target.value.toLowerCase()});   
+  setSearchBar (event) {
+    // Super still filters super mario thanks to
+    this.props.productsActions.setSearchBar(event.target.value.toLowerCase());
      }
 
   render () {
-    const { products, selectedProduct, searchBar } = this.state;
-    const { products  } = this.props;
+    const { products, searchBar,selectedProduct } = this.props;
     console.log(products);
     return (
       <div>
@@ -62,8 +43,7 @@ export default class ProductsContainer extends Component {
           products={products}
           searchBar={searchBar}
           setSearchBar={this.setSearchBar}
-          toggleModal={this.toggleModal} 
-          deleteProduct={this.deleteProduct}                                          
+          toggleModal={this.toggleModal}
         />
       </div>
     );
@@ -73,7 +53,9 @@ export default class ProductsContainer extends Component {
 // We can read values from the state thanks to mapStateToProps
 function mapStateToProps (state) {
   return { // We get all the products to list in the page
-    products: state.getIn(['products', 'list'], Immutable.List()).toJS()
+    products: state.getIn(['products', 'list'], Immutable.List()).toJS(),
+    searchBar: state.getIn(['products', 'searchBar'], ''),
+    selectedProduct: state.getIn(['products', 'selectedProduct'], Immutable.List()).toJS()
   }
 }
 // We can dispatch actions to the reducer and sagas

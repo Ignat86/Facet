@@ -1,24 +1,23 @@
-// We import Redux and Redux-saga dependencies
+// We import Redux and Redux-thunkdependencies
 import {
   createStore,
   applyMiddleware
 } from 'redux';
-import createSagaMiddleware from 'redux-saga';
 // this comes from our created files
-import rootSaga from './sagas';
+import thunk from 'redux-thunk';
 import reducer from './reducers';
+import {fetchProducts} from './thunks';
+import { getProductsSuccess, getProductsFailure } from './actions/products';
 
-// The function in charge of creating and returning the store of the app
 const configureStore = () => {
-  const sagaMiddleware = createSagaMiddleware();
-  // The store is created with a reducer parameter and the saga middleware
+
+  // The store is created with a reducer parameter and the thunk middleware
   const store = createStore(
     reducer,
-    applyMiddleware(sagaMiddleware)
+    applyMiddleware(thunk)
   );
-  // rootSaga starts all the sagas in parallel
-  sagaMiddleware.run(rootSaga);
+  store.dispatch(fetchProducts());
 
-  return store; // Return the state 
+  return store; // Return the state
 }
 export default configureStore;
